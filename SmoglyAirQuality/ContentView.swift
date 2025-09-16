@@ -118,7 +118,10 @@ struct ContentView: View {
             }
             .onAppear {
                 locationManager.requestLocationPermission()
-                loadAirQualityData()
+                // Add a small delay to ensure location services are initialized
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    loadAirQualityData()
+                }
             }
             .onChange(of: userDefaultsManager.selectedDataSource) { _ in
                 loadAirQualityData()
@@ -131,6 +134,9 @@ struct ContentView: View {
                 }
             }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+                loadAirQualityData()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .appDidBecomeActive)) { _ in
                 loadAirQualityData()
             }
         }
